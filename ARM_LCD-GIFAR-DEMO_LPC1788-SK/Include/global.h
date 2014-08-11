@@ -21,7 +21,7 @@
 
 
 // ************ CHIP HEADERS ******************************************************
-#include "lpc177x_8x_libcfg_default.h"
+//#include "lpc177x_8x_libcfg_default.h"
 //#include "../Chip/Include/arm_common_tables.h"
 //#include "../Chip/Include/arm_const_structs.h"
 //#include "../Chip/Include/arm_math.h"
@@ -35,27 +35,46 @@
 //#include "../Chip/Include/core_sc000.h"
 //#include "../Chip/Include/core_sc300.h"
 
-#include "../Chip/Driver/Include/lpc177x_8x_pinsel.h"
-//#include "./Chip/Driver/Include/lpc17xx.h"
-//#include "./Chip/Driver/Include/lpc17xx_8x_libcfg.h" // load library configuration
-#include "../Chip/Driver/Include/lpc177x_8x_gpio.h"
-#include "../Chip/Driver/Include/lpc177x_8x_clkpwr.h"
-#include "../Chip/Driver/Include/lpc177x_8x_uart.h"
+//#include "../Chip/Drivers/Include/lpc177x_8x_pinsel.h"
+//#include "../Chip/Drivers/Include/lpc17xx.h"
+//#include "../Chip/Drivers/Include/lpc17xx_8x_libcfg.h" // load library configuration
+//#include "../Chip/Drivers/Include/lpc177x_8x_gpio.h"
+#include "../Chip/Drivers/Include/lpc177x_8x_clkpwr.h"
+#include "../Chip/Drivers/Include/lpc177x_8x_pwm.h"
+//#include "../Chip/Drivers/Include/lpc177x_8x_uart.h"
+
+//#include "../Chip/Drivers/Include/lpc177x_8x_systick.h"
+
 // ************ BOARD SUPPORT PACKAGE HEADERS *************************************
-//I "./BSP/Include"`
+#include "../BSP/bsp.h"
  // #pragma GCC system_header
 
 // ************ FRAMEWORK HEADERS *************************************************
-#include "bsp.h"
-#pragma GCC system_header
-#include "fnet.h"
-#include "fnet_config.h"
-#include "fnet_isr.h"		// prepojenie CPU IRQ a FNET aplikacie
-#include "lpc_debug.h"
+//#include "bsp.h"
+//#pragma GCC system_header
 
-// export from main.c module
-extern void cpu_serial_init(long port_number, unsigned long baud_rate);
-extern void FNET_START(void);
-extern void HW_initialize_ETH(void);
+// SWIM Graphics User Interface Library
+//#include "LPC177x_8x.h"
+//#include "type.h"
+//#include "ex_sdram.h"
+//#include "lcd_params.h"
+//#include "lcd_driver.h"
+//#include "lcd_type.h"
+#include "../LIB/GUI-SWIM/Include/lpc_swim_font.h"
+#include "../LIB/GUI-SWIM/Include/lpc_swim.h"
+#include "../LIB/GUI-SWIM/Include/lpc_rom8x16.h"
+#include "../LIB/GUI-SWIM/Include/lpc_winfreesystem14x16.h"
+#include "../LIB/GUI-SWIM/Include/lpc_x6x13.h"
+//#include "LPC177x_8x.h"
+//#include "type.h"
+//#include "timer.h"
+
+
+// IAR example driuvers an application:
+#include "../Application/lcd_config.h"
+#include "../Application/logo.h"
+#include "../Application/cursor.h"
+
+
 
 #endif /* GLOBAL_H_ */

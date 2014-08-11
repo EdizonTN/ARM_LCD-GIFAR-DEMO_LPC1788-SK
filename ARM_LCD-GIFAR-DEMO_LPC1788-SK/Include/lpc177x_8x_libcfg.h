@@ -8,7 +8,7 @@
 #ifndef _LPC177x_8x_LIBCFG_H_
 #define _LPC177x_8x_LIBCFG_H_
 
-#include "lpc_types.h"
+#include "lpc_swim_types.h"
 
 /************************** DEBUG MODE DEFINITIONS *********************************/
 /* Un-comment the line below to compile the library in DEBUG mode, this will expanse
