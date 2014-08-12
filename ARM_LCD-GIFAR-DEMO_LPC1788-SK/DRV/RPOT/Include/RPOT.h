@@ -8,14 +8,15 @@
 #ifndef RPOT_H_
 #define RPOT_H_
 
-//ADC input preset on this board
-#define BRD_ADC_PREPARED_CHANNEL        (ADC_CHANNEL_2)
-#define BRD_ADC_PREPARED_INTR           (ADC_ADINTEN2)
+// ******************************************************************************************************
+// ADC Input - Potentiometer - connection:
+// ******************************************************************************************************
+#define RPOT_ADC_PREPARED_CHANNEL		BSP_RPOT_ADC_PREPARED_CHANNEL
+#define RPOT_ADC_PREPARED_INTR			BSP_RPOT_ADC_PREPARED_INTR
+#define RPOT_ADC_PREPARED_CH_PORT		BSP_RPOT_ADC_PREPARED_CH_PORT
+#define RPOT_ADC_PREPARED_CH_PIN		BSP_RPOT_ADC_PREPARED_CH_PIN
+#define RPOT_ADC_PREPARED_CH_FUNC_NO	BSP_RPOT_ADC_PREPARED_CH_FUNC_NO
 
-#define BRD_ADC_PREPARED_CH_PORT        (0)
-#define BRD_ADC_PREPARED_CH_PIN         (25)
-#define BRD_ADC_PREPARED_CH_FUNC_NO     (1)
-
-
+void Init_RPOT(void);
 
 #endif /* RPOT_H_ */

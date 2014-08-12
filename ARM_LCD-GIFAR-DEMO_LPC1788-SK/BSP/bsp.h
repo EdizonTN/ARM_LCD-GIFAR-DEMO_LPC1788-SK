@@ -214,47 +214,48 @@
 
 
 
-#include "../DRV/ExRAM/Include/sdram_k4s561632j.h"  			// driver pre externu SDRAM
-#include "../DRV/LCD/Include/GFT035EA320240Y.h"  				// driver pre TFT LCD DIsplay
-#include "../DRV/RPOT/Include/RPOT.h"  							// driver pre onboard potenciometer
 
 
 
-//ADC input preset on this board
-#define RPOT_ADC_PREPARED_CHANNEL        (ADC_CHANNEL_7)
-#define RPOT_ADC_PREPARED_INTR           (ADC_ADINTEN7)
 
-#define RPOT_ADC_PREPARED_CH_PORT        (0)
-#define RPOT_ADC_PREPARED_CH_PIN         (13)
-#define RPOT_ADC_PREPARED_CH_FUNC_NO     (3)
 
-// *************************************************************************************************
+
+
+// ******************************************************************************************************
+// External SDRAM memory:
+// ******************************************************************************************************
+#include "../DRV/ExRAM/Include/sdram_k4s561632j.h"  			// include a driver
+
+// ******************************************************************************************************
+// LCD TFT Display - GiFar GFT035EA320240Y:
+// ******************************************************************************************************
+#include "../DRV/LCD/Include/GFT035EA320240Y.h"  				// include a driver
+
+// ******************************************************************************************************
+// ADC Input - Potentiometer - hardware connection:
+// ******************************************************************************************************
+#define BSP_RPOT_ADC_PREPARED_CHANNEL        (ADC_CHANNEL_7)
+#define BSP_RPOT_ADC_PREPARED_INTR           (ADC_ADINTEN7)
+#define BSP_RPOT_ADC_PREPARED_CH_PORT        (0)
+#define BSP_RPOT_ADC_PREPARED_CH_PIN         (13)
+#define BSP_RPOT_ADC_PREPARED_CH_FUNC_NO     (3)
+#include "../DRV/RPOT/Include/RPOT.h"							// include a driver
+
+// ******************************************************************************************************
 // Touch screen reader - analog - hardware connection:
-#define BSP_TSX1_ADC_PREPARED_CHANNEL        (ADC_CHANNEL_1)
-#define BSP_TSX1_ADC_PREPARED_INTR           (ADC_ADINTEN0)
-#define BSP_TSX2_ADC_PREPARED_CHANNEL        (ADC_CHANNEL_1)
-#define BSP_TSX2_ADC_PREPARED_INTR           (ADC_ADINTEN0)
-#define BSP_TSY1_ADC_PREPARED_CHANNEL        (ADC_CHANNEL_1)
-#define BSP_TSY1_ADC_PREPARED_INTR           (ADC_ADINTEN0)
-#define BSP_TSY2_ADC_PREPARED_CHANNEL        (ADC_CHANNEL_1)
-#define BSP_TSY2_ADC_PREPARED_INTR           (ADC_ADINTEN0)
+// ******************************************************************************************************
+#define BSP_TS_X1_PORT        				0
+#define BSP_TS_X1_PIN        				24
+#define BSP_TS_X2_PORT        				0
+#define BSP_TS_X2_PIN        				19
+#define BSP_TS_Y1_PORT        				0
+#define BSP_TS_Y1_PIN        				23
+#define BSP_TS_Y2_PORT        				0
+#define BSP_TS_Y2_PIN        				21
+#define BSP_TS_X_ADC_CH       				1
+#define BSP_TS_Y_ADC_CH       				0
 
-#define BSP_TSX1_ADC_PREPARED_CH_PORT        (0)
-#define BSP_TSX1_ADC_PREPARED_CH_PIN         (25)
-#define BSP_TSX1_ADC_PREPARED_CH_FUNC_NO     (1)
-
-#define BSP_TSX2_ADC_PREPARED_CH_PORT        (0)
-#define BSP_TSX2_ADC_PREPARED_CH_PIN         (25)
-#define BSP_TSX2_ADC_PREPARED_CH_FUNC_NO     (1)
-
-#define BSP_TSY1_ADC_PREPARED_CH_PORT        (0)
-#define BSP_TSY1_ADC_PREPARED_CH_PIN         (25)
-#define BSP_TSY1_ADC_PREPARED_CH_FUNC_NO     (1)
-
-#define BSP_TSY2_ADC_PREPARED_CH_PORT        (0)
-#define BSP_TSY2_ADC_PREPARED_CH_PIN         (25)
-#define BSP_TSY2_ADC_PREPARED_CH_FUNC_NO     (1)
-#include "../DRV/TouchScreen/Include/TS_Analog.h"				// driver pre touch-screen - Analogovy
+#include "../DRV/TouchScreen/Include/TS_Analog.h"				// include a driver
 
 
 #endif /* BSP_H_ */

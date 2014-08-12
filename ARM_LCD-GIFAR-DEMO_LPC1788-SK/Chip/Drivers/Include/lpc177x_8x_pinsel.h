@@ -58,18 +58,18 @@
 /** Selects output function mode (on-chip pull-up/pull-down resistor control */
 #define IOCON_MODE_POS              (3)
 #define IOCON_MODE_MASK             (0x03<<IOCON_MODE_POS)
-#define IOCON_MODE_PLAIN                ((0<<IOCON_MODE_POS))
-#define IOCON_MODE_PULLDOWN     ((1<<IOCON_MODE_POS))
+#define IOCON_MODE_PLAIN            ((0<<IOCON_MODE_POS))
+#define IOCON_MODE_PULLDOWN     	((1<<IOCON_MODE_POS))
 #define IOCON_MODE_PULLUP           ((2<<IOCON_MODE_POS))
 #define IOCON_MODE_REPEATER         ((3<<IOCON_MODE_POS))
 
 /** Hysteresis */
 #define IOCON_HYS_POS               (5)
 #define IOCON_HYS_MASK              (0x01<<IOCON_HYS_POS)
-#define IOCON_HYS_ENABLE                ((1<<IOCON_HYS_POS))
+#define IOCON_HYS_ENABLE            ((1<<IOCON_HYS_POS))
 
 /** Input polarity */
-#define IOCON_INVERT_POS                (6)
+#define IOCON_INVERT_POS            (6)
 #define IOCON_INVERT_MASK           (0x01<<IOCON_INVERT_POS)
 #define IOCON_INVERT_INPUT          (1<<IOCON_INVERT_POS)
 

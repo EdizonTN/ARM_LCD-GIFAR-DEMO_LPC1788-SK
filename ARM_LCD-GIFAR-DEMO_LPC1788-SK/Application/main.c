@@ -32,7 +32,7 @@
  *
  *    $Revision: 24636 $
  **************************************************************************/
-
+#include "global.h"
 #include "lcd_config.h"
 #include "lpc_types.h"
 #include "system_LPC177x_8x.h"
@@ -137,11 +137,13 @@ uint32_t GetBacklightVal (void) {
   uint32_t val;
   uint32_t backlight_off, pclk;
 
-  ADC_StartCmd(LPC_ADC, ADC_START_NOW);
+  //ADC_StartCmd(LPC_ADC, ADC_START_NOW);
 
-  while (!(ADC_ChannelGetStatus(LPC_ADC, BRD_ADC_PREPARED_CHANNEL, ADC_DATA_DONE)));
+  //while (!(ADC_ChannelGetStatus(LPC_ADC, BRD_ADC_PREPARED_CHANNEL, ADC_DATA_DONE)));
 
-  val = ADC_ChannelGetData(LPC_ADC, BRD_ADC_PREPARED_CHANNEL);
+  //val = ADC_ChannelGetData(LPC_ADC, BRD_ADC_PREPARED_CHANNEL);
+  val = GetValue_RPOT();
+
 #if ((_CUR_USING_LCD == _RUNNING_LCD_QVGA_TFT)||(_CUR_USING_LCD == _RUNNING_LCD_GFT035A320240Y))
   val = (val >> 7) & 0x3F;
   pclk = CLKPWR_GetCLK(CLKPWR_CLKTYPE_PER);
@@ -270,12 +272,13 @@ void lcd_colorbars(void)
   uint32_t start_pix_x, start_pix_y, pix_ofs;
 #endif
 #if TCS_USED
-  TSC2046_Init_Type tsc_config;
+  //TSC2046_Init_Type TSC_Config;
 #endif
   
   /***************/
   /** Initialize ADC */
   /***************/
+  /*
   PINSEL_ConfigPin (BRD_ADC_PREPARED_CH_PORT,
                     BRD_ADC_PREPARED_CH_PIN,
                     BRD_ADC_PREPARED_CH_FUNC_NO);
@@ -284,6 +287,8 @@ void lcd_colorbars(void)
   ADC_Init(LPC_ADC, 400000);
   ADC_IntConfig(LPC_ADC, BRD_ADC_PREPARED_INTR, DISABLE);
   ADC_ChannelCmd(LPC_ADC, BRD_ADC_PREPARED_CHANNEL, ENABLE);
+*/
+  Init_RPOT();
 
   /***************/
   /** Initialize LCD */
@@ -336,18 +341,20 @@ void lcd_colorbars(void)
   #endif
 
   #if TCS_USED
-  tsc_config.ad_left = TOUCH_AD_LEFT;
-  tsc_config.ad_right = TOUCH_AD_RIGHT;
-  tsc_config.ad_top = TOUCH_AD_TOP;
-  tsc_config.ad_bottom = TOUCH_AD_BOTTOM;
-  tsc_config.lcd_h_size = LCD_H_SIZE;
-  tsc_config.lcd_v_size = LCD_V_SIZE;
+  TSC_Config.ad_left = TOUCH_AD_LEFT;
+  TSC_Config.ad_right = TOUCH_AD_RIGHT;
+  TSC_Config.ad_top = TOUCH_AD_TOP;
+  TSC_Config.ad_bottom = TOUCH_AD_BOTTOM;
+  TSC_Config.lcd_h_size = LCD_H_SIZE;
+  TSC_Config.lcd_v_size = LCD_V_SIZE;
+  TSC_Config.Priority = 1;
   #if (_CUR_USING_LCD == _RUNNING_LCD_QVGA_TFT)
-  tsc_config.swap_xy = 1;
+  TSC_Config.swap_xy = 1;
   #else
-  tsc_config.swap_xy = 1;
+  TSC_Config.swap_xy = 1;
   #endif
-  	  //InitTSC2046(&tsc_config); // NEMAME EXTERNY ts dECODER....
+  	  //InitTSC2046(&TSC_Config); // NEMAME EXTERNY ts dECODER....
+  	  Init_TS (&TSC_Config);	  // init touch screen with priority 1
   #endif
 
   LCD_SetImage(LCD_PANEL_UPPER, NULL);
