@@ -11,22 +11,23 @@
 // ******************************************************************************************************
 // Function prototypes
 // ******************************************************************************************************
-extern unsigned long install_irq(unsigned long IntNumber, void *HandlerAddr, unsigned long Priority);
-//void detected(void)__irq;
-
-//void display_lcd(short x_value, short y_value);
+// extern unsigned long install_irq(unsigned long IntNumber, void *HandlerAddr, unsigned long Priority);
 void Init_TS(TS_Init_Type *pConfig);
 char hex_to_ascii(char ch);
 unsigned int touch_detect(void);
 
+static int16_t ConvertCoord(int16_t Coord, int16_t MinVal, int16_t MaxVal, int16_t TrueSize);
 TS_Init_Type TSC_Config;
+
+uint8_t TS_Activated_Flag;
 
 // ******************************************************************************************************
 // Globals
 // ******************************************************************************************************
 #define num_samples 16 								// number of A/D samples per axisunsigned int x_values[num_samples]; 				// array to store x_samples
 unsigned int y_values[num_samples]; 				// array to store y_samples
-static short TS_x_value, TS_y_value
+static short TS_x_value = 1;
+static short TS_y_value = -1;
 // --------------------------------------------------
 
 
@@ -83,143 +84,15 @@ unsigned int touch_detect(void)
 // Detected IRQ event from X-Plus line, Falling edge.
 void GPIO_IRQHandler(void) //_ _ irq
 {
-	short i;
 	if(GPIO_GetIntStatus(TS_X1_PORT, TS_X1_PIN, 1))
 	{
 		GPIO_ClearInt(TS_X1_PORT, 1 << TS_X1_PIN);
-
 		TIM_Waitms (debounce); 								// debounce the touch
-		while ((touch_detect()))							// loop as long as screen is touched
+		if(touch_detect())
 		{
-
-			//read_ch_x(); 									// read and collect the x values
-			//config_pins_x(); 								// configure pins for read x-dir
-			//PINSEL0 &= ~(X_2_mask); 						// X- is digital I/O
-			//PINMODE0 &= ~(X_2_mask);
-			//PINMODE0 |= X_2_no_pull; 						// no pullup on X-
-			//IODIR0 |= X_2; 								// X- is an output
-			//IOCLR0 |= X_2; 								// make X- low
-			PINSEL_SetPinMode(TS_X2_PORT,TS_X2_PIN, PINSEL_BASICMODE_PLAINOUT);
-			PINSEL_ConfigPin(TS_X2_PORT,TS_X2_PIN,IOCON_DIGITIAL_MODE);
-			FIO_SetDir(TS_X2_PORT, 1 << TS_X2_PIN, GPIO_DIRECTION_OUTPUT);
-			FIO_ClearValue(TS_X2_PORT, 1 << TS_X2_PIN);
-
-			//PINSEL0 &= ~(Y_2_mask); 						// Y- is digital I/O
-			//PINMODE0 &= ~(Y_2_mask);
-			//PINMODE0 |= Y_2_no_pull; 						// no pullup on Y-
-			//IODIR0 &= ~(Y_2); 								// Y- is an input
-			PINSEL_SetPinMode(TS_Y2_PORT,TS_Y2_PIN, PINSEL_BASICMODE_PLAINOUT);
-			PINSEL_ConfigPin(TS_Y2_PORT,TS_Y2_PIN,IOCON_DIGITIAL_MODE);
-			FIO_SetDir(TS_Y2_PORT, 1 << TS_Y2_PIN, GPIO_DIRECTION_INPUT);
-
-			//PINSEL1 &= ~(X_1_mask); 						// X+ is digital I/O
-			//PINMODE1 &= ~(X_2_mask);
-			//PINMODE1 |= X_1_no_pull; 						// no pullup on X+
-			//IODIR0 |= X_1; 								// X+ is an output
-			//IOSET0 |= X_1; 								// make X+ high
-			PINSEL_SetPinMode(TS_X1_PORT,TS_X1_PIN, PINSEL_BASICMODE_PLAINOUT);
-			PINSEL_ConfigPin(TS_X1_PORT,TS_X1_PIN,IOCON_DIGITIAL_MODE);
-			FIO_SetDir(TS_X1_PORT, 1 << TS_X1_PIN, GPIO_DIRECTION_OUTPUT);
-			FIO_SetValue(TS_X1_PORT, 1 << TS_X1_PIN);
-
-
-			//PINSEL1 &= ~(Y_1_mask);
-			//PINSEL1 |= ADC_on_Y; 							// Y+ is an ADC pin
-			PINSEL_ConfigPin(TS_Y1_PORT,TS_Y1_PIN,IOCON_ANALOG_MODE);
-
-			TIM_Waitms(TS_SETTLING_TIME);					// settling time for switching
-
-			ADC_Init(LPC_ADC, 400000);
-			//ADC_IntConfig(LPC_ADC, RPOT_ADC_PREPARED_INTR, DISABLE);
-			ADC_ChannelCmd(LPC_ADC, TS_Y_ADC_CH, ENABLE);
-
-			//AD0CR = 0x00200304; 							// Power up, PCLK/4, sel AD0.2
-			for (i = 0; i < num_samples; i++)
-			{
-				// AD0CR |= 0x01000000; 						// Start A/D conversion
-				ADC_StartCmd(LPC_ADC, ADC_START_NOW);
-				// while (AD0DR2 & 0x80000000); 				// wait conversion completed
-				while (ADC_ChannelGetStatus(LPC_ADC,TS_Y_ADC_CH, ADC_DR_DONE_FLAG) == RESET);
-				//x_values[i] = ((AD0DR2 >> 6) & 0x3FF); 		// store result
-				x_values[i] = (ADC_ChannelGetData(LPC_ADC,TS_Y_ADC_CH) >>6) & 0x3ff;
-			}
-			ADC_DeInit(LPC_ADC);
-
-			//read_ch_y();									// read and collect the y values
-			//config_pins_y(); 								// configure pins for read y-dir
-			//PINSEL0 &= ~(X_2_mask); 						// X- is digital I/O
-			//PINMODE0 &= ~(X_2_mask);
-			//PINMODE0 |= X_2_no_pull; 						// no pullup on X-
-			//IODIR0 &= ~(X_2); 								// X- is an input
-			PINSEL_SetPinMode(TS_X2_PORT,TS_X2_PIN, PINSEL_BASICMODE_PLAINOUT);
-			PINSEL_ConfigPin(TS_X2_PORT,TS_X2_PIN,IOCON_DIGITIAL_MODE);
-			FIO_SetDir(TS_X2_PORT, 1 << TS_X2_PIN, GPIO_DIRECTION_INPUT);
-
-			//PINSEL0 &= ~(Y_2_mask); 						// Y- is digital I/O
-			//PINMODE0 &= ~(Y_2_mask);
-			//PINMODE0 |= Y_2_no_pull; 						// no pullup on Y-
-			//IODIR0 |= Y_2; 									// Y- is an output
-			//IOCLR0 |= Y_2; 									// make Y- low
-			PINSEL_SetPinMode(TS_Y2_PORT,TS_Y2_PIN, PINSEL_BASICMODE_PLAINOUT);
-			PINSEL_ConfigPin(TS_Y2_PORT,TS_Y2_PIN,IOCON_DIGITIAL_MODE);
-			FIO_SetDir(TS_Y2_PORT, 1 << TS_Y2_PIN, GPIO_DIRECTION_OUTPUT);
-			FIO_ClearValue(TS_Y2_PORT, 1 << TS_Y2_PIN);
-
-			//PINSEL1 &= ~(X_1_mask);
-			//PINSEL1 |= ADC_on_X; 							// X+ is an ADC pin
-			PINSEL_ConfigPin(TS_X1_PORT,TS_X1_PIN,IOCON_ANALOG_MODE);
-
-			//PINSEL1 &= ~(Y_1_mask); 						// Y+ is digital I/O
-			//PINMODE1 &= ~(Y_1_mask); 						// clear the two bits &
-			//PINMODE1 |= Y_1_no_pull; 						// no pullup on Y+
-			//IODIR0 |= Y_1; 									// Y+ is an output
-			//IOSET0 |= Y_1; 									// make Y+ high
-			PINSEL_SetPinMode(TS_Y1_PORT,TS_Y1_PIN, PINSEL_BASICMODE_PLAINOUT);
-			PINSEL_ConfigPin(TS_Y1_PORT,TS_Y1_PIN,IOCON_DIGITIAL_MODE);
-			FIO_SetDir(TS_Y1_PORT, 1 << TS_Y1_PIN, GPIO_DIRECTION_OUTPUT);
-			FIO_SetValue(TS_Y1_PORT, 1 << TS_Y1_PIN);
-
-			TIM_Waitms(TS_SETTLING_TIME); 					// settling time for switching
-
-			ADC_Init(LPC_ADC, 400000);
-			//ADC_IntConfig(LPC_ADC, RPOT_ADC_PREPARED_INTR, DISABLE);
-			ADC_ChannelCmd(LPC_ADC, TS_X_ADC_CH, ENABLE);
-
-			//AD0CR = 0x00200302; 							// Power up, PCLK/4, sel AD0.1
-			for (i = 0; i < num_samples; i++)
-			{
-				// AD0CR |= 0x01000000; 						// Start A/D conversion
-				ADC_StartCmd(LPC_ADC, ADC_START_NOW);
-				// while (AD0DR1 & 0x80000000); 				// wait until completed
-				while (ADC_ChannelGetStatus(LPC_ADC,TS_X_ADC_CH, ADC_DR_DONE_FLAG) == RESET);
-				//x_values[i] = ((AD0DR2 >> 6) & 0x3FF); 		// store result
-				x_values[i] = (ADC_ChannelGetData(LPC_ADC,TS_X_ADC_CH) >>6) & 0x3ff;
-			}
-			ADC_DeInit(LPC_ADC);
-
-
-
-
-
-			TS_x_value = 0;								// initial value
-			for (i=0; i < num_samples; i++)
-			{
-				TS_x_value += TS_x_values[i]; 				// add up the conversion results
-			}
-			TS_x_value = TS_x_value /num_samples; 			// get average
-			TS_y_value = 0;								// initial value
-			for (i=0; i < num_samples; i++)
-			{
-				TS_y_value += TS_y_values[i]; 				// add up conversion results
-			}
-			TS_y_value = TS_y_value /num_samples; 			// get average
-			//if (touch_detect())display_lcd(x_value, y_value);// display values if still have a touch
+			TS_Activated_Flag = SET;
+			//TS_Read();
 		}
-		//IO0_INT_CLR = X_plus; 							// clear X-plus interrupt
-
-		//led_green();
-		//VICVectAddr = 0;								// Acknowledge Interrupt
-
 	}
 }
 
@@ -237,6 +110,8 @@ void Init_TS(TS_Init_Type *pConfig)
 
 	GPIO_Init();
 	GPIO_IntCmd(TS_X1_PORT, 1 << TS_X1_PIN, 1);	// - 1: Falling edge
+	ADC_Init(LPC_ADC, 400000);
+
 	NVIC_SetPriority(GPIO_IRQn, pConfig->Priority);
 	NVIC_EnableIRQ(GPIO_IRQn);
 	touch_detect();
@@ -249,38 +124,209 @@ void DeInit_TS(void)
 	// TIM_DeInit(LPC_TIM0);
 }
 
+
+
+
+
+// 	***********************************************************************
+//  * @brief       convert the coord received from TSC to a value on truly LCD.
+//  * @param[in]   Coord       received coord
+//  * @param[in]   MinVal    the minimum value of a coord
+//  * @param[in]   MaxVal     the maximum value of a coord
+//  * @param[in]   TrueSize   the size on LCD
+//  * @return      the coord after converting.
+//  **********************************************************************
+static int16_t ConvertCoord(int16_t Coord, int16_t MinVal, int16_t MaxVal, int16_t TrueSize)
+{
+	int16_t tmp;
+	int16_t ret;
+	uint8_t convert = 0;
+
+	if (MinVal > MaxVal)        // Swap value
+	{
+		tmp = MaxVal;
+		MaxVal = MinVal;
+		MinVal = tmp;
+		convert = 1;
+	}
+
+	ret = (Coord - MinVal) * TrueSize / (MaxVal - MinVal);
+	if (convert)
+		ret = TrueSize - ret;
+
+	return ret;
+}
+
+
+void TS_Read(void)
+{
+	uint32_t i;
+
+	//read_ch_x(); 									// read and collect the x values
+	//config_pins_x(); 								// configure pins for read x-dir
+	//PINSEL0 &= ~(X_2_mask); 						// X- is digital I/O
+	//PINMODE0 &= ~(X_2_mask);
+	//PINMODE0 |= X_2_no_pull; 						// no pullup on X-
+	//IODIR0 |= X_2; 								// X- is an output
+	//IOCLR0 |= X_2; 								// make X- low
+	PINSEL_SetPinMode(TS_X2_PORT,TS_X2_PIN, PINSEL_BASICMODE_PLAINOUT);
+	PINSEL_ConfigPin(TS_X2_PORT,TS_X2_PIN,IOCON_DIGITIAL_MODE);
+	FIO_SetDir(TS_X2_PORT, 1 << TS_X2_PIN, GPIO_DIRECTION_OUTPUT);
+	FIO_ClearValue(TS_X2_PORT, 1 << TS_X2_PIN);
+
+	//PINSEL0 &= ~(Y_2_mask); 						// Y- is digital I/O
+	//PINMODE0 &= ~(Y_2_mask);
+	//PINMODE0 |= Y_2_no_pull; 						// no pullup on Y-
+	//IODIR0 &= ~(Y_2); 								// Y- is an input
+	PINSEL_SetPinMode(TS_Y2_PORT,TS_Y2_PIN, PINSEL_BASICMODE_PLAINOUT);
+	PINSEL_ConfigPin(TS_Y2_PORT,TS_Y2_PIN,IOCON_DIGITIAL_MODE);
+	FIO_SetDir(TS_Y2_PORT, 1 << TS_Y2_PIN, GPIO_DIRECTION_INPUT);
+
+	//PINSEL1 &= ~(X_1_mask); 						// X+ is digital I/O
+	//PINMODE1 &= ~(X_2_mask);
+	//PINMODE1 |= X_1_no_pull; 						// no pullup on X+
+	//IODIR0 |= X_1; 								// X+ is an output
+	//IOSET0 |= X_1; 								// make X+ high
+	PINSEL_SetPinMode(TS_X1_PORT,TS_X1_PIN, PINSEL_BASICMODE_PLAINOUT);
+	PINSEL_ConfigPin(TS_X1_PORT,TS_X1_PIN,IOCON_DIGITIAL_MODE);
+	FIO_SetDir(TS_X1_PORT, 1 << TS_X1_PIN, GPIO_DIRECTION_OUTPUT);
+	FIO_SetValue(TS_X1_PORT, 1 << TS_X1_PIN);
+
+
+	//PINSEL1 &= ~(Y_1_mask);
+	//PINSEL1 |= ADC_on_Y; 							// Y+ is an ADC pin
+	PINSEL_ConfigPin(TS_Y1_PORT,TS_Y1_PIN,IOCON_ANALOG_MODE);
+
+	TIM_Waitms(TS_SETTLING_TIME);					// settling time for switching
+
+	//AD0CR = 0x00200304; 							// Power up, PCLK/4, sel AD0.2
+	ADC_Init(LPC_ADC, 400000);
+	for (i = 0; i < num_samples; i++)
+	{
+		// AD0CR |= 0x01000000; 						// Start A/D conversion
+
+		ADC_ChannelCmd(LPC_ADC, TS_Y_ADC_CH, ENABLE);
+		ADC_StartCmd(LPC_ADC, ADC_START_NOW);;
+		// while (AD0DR2 & 0x80000000); 				// wait conversion completed
+		while (!(ADC_ChannelGetStatus(LPC_ADC, TS_Y_ADC_CH, ADC_DATA_DONE)));
+		ADC_ChannelCmd(LPC_ADC, TS_Y_ADC_CH, DISABLE);
+		//x_values[i] = ((AD0DR2 >> 6) & 0x3FF); 		// store result
+		x_values[i] = (ADC_ChannelGetData(LPC_ADC,TS_Y_ADC_CH) >>6) & 0x3ff;
+	}
+	ADC_DeInit(LPC_ADC);
+
+	//read_ch_y();									// read and collect the y values
+	//config_pins_y(); 								// configure pins for read y-dir
+	//PINSEL0 &= ~(X_2_mask); 						// X- is digital I/O
+	//PINMODE0 &= ~(X_2_mask);
+	//PINMODE0 |= X_2_no_pull; 						// no pullup on X-
+	//IODIR0 &= ~(X_2); 								// X- is an input
+	PINSEL_SetPinMode(TS_X2_PORT,TS_X2_PIN, PINSEL_BASICMODE_PLAINOUT);
+	PINSEL_ConfigPin(TS_X2_PORT,TS_X2_PIN,IOCON_DIGITIAL_MODE);
+	FIO_SetDir(TS_X2_PORT, 1 << TS_X2_PIN, GPIO_DIRECTION_INPUT);
+
+	//PINSEL0 &= ~(Y_2_mask); 						// Y- is digital I/O
+	//PINMODE0 &= ~(Y_2_mask);
+	//PINMODE0 |= Y_2_no_pull; 						// no pullup on Y-
+	//IODIR0 |= Y_2; 									// Y- is an output
+	//IOCLR0 |= Y_2; 									// make Y- low
+	PINSEL_SetPinMode(TS_Y2_PORT,TS_Y2_PIN, PINSEL_BASICMODE_PLAINOUT);
+	PINSEL_ConfigPin(TS_Y2_PORT,TS_Y2_PIN,IOCON_DIGITIAL_MODE);
+	FIO_SetDir(TS_Y2_PORT, 1 << TS_Y2_PIN, GPIO_DIRECTION_OUTPUT);
+	FIO_ClearValue(TS_Y2_PORT, 1 << TS_Y2_PIN);
+
+	//PINSEL1 &= ~(X_1_mask);
+	//PINSEL1 |= ADC_on_X; 							// X+ is an ADC pin
+	PINSEL_ConfigPin(TS_X1_PORT,TS_X1_PIN,IOCON_ANALOG_MODE);
+
+	//PINSEL1 &= ~(Y_1_mask); 						// Y+ is digital I/O
+	//PINMODE1 &= ~(Y_1_mask); 						// clear the two bits &
+	//PINMODE1 |= Y_1_no_pull; 						// no pullup on Y+
+	//IODIR0 |= Y_1; 									// Y+ is an output
+	//IOSET0 |= Y_1; 									// make Y+ high
+	PINSEL_SetPinMode(TS_Y1_PORT,TS_Y1_PIN, PINSEL_BASICMODE_PLAINOUT);
+	PINSEL_ConfigPin(TS_Y1_PORT,TS_Y1_PIN,IOCON_DIGITIAL_MODE);
+	FIO_SetDir(TS_Y1_PORT, 1 << TS_Y1_PIN, GPIO_DIRECTION_OUTPUT);
+	FIO_SetValue(TS_Y1_PORT, 1 << TS_Y1_PIN);
+
+	TIM_Waitms(TS_SETTLING_TIME); 					// settling time for switching
+
+	//AD0CR = 0x00200302; 							// Power up, PCLK/4, sel AD0.1
+	ADC_Init(LPC_ADC, 400000);
+	for (i = 0; i < num_samples; i++)
+	{
+		// AD0CR |= 0x01000000; 						// Start A/D conversion
+		ADC_ChannelCmd(LPC_ADC, TS_X_ADC_CH, ENABLE);
+		ADC_StartCmd(LPC_ADC, ADC_START_NOW);;
+		// while (AD0DR1 & 0x80000000); 				// wait until completed
+		while (!(ADC_ChannelGetStatus(LPC_ADC, TS_X_ADC_CH, ADC_DATA_DONE)));
+		ADC_ChannelCmd(LPC_ADC, TS_X_ADC_CH, DISABLE);
+		//x_values[i] = ((AD0DR2 >> 6) & 0x3FF); 		// store result
+		x_values[i] = (ADC_ChannelGetData(LPC_ADC,TS_X_ADC_CH) >>6) & 0x3ff;
+	}
+	ADC_DeInit(LPC_ADC);
+
+
+
+
+
+	TS_x_value = 0;								// initial value
+	for (i=0; i < num_samples; i++)
+	{
+		TS_x_value += x_values[i]; 				// add up the conversion results
+	}
+	TS_x_value = TS_x_value /num_samples; 			// get average
+	TS_y_value = 0;								// initial value
+	for (i=0; i < num_samples; i++)
+	{
+		TS_y_value += y_values[i]; 				// add up conversion results
+	}
+	TS_y_value = TS_y_value /num_samples; 			// get average
+
+}
+
+
+
+
 void GetTouchCoord(int16_t *pX, int16_t* pY)
 {
 	uint16_t i, tmp;
 	int16_t coord, x = -1, y = -1, z1 = -1, z2 = -1, z;
 
-	coord = 0;
+	TS_Read();
+
+	if ((TS_x_value >=0) | (TS_y_value >=0 ))
+	{
+		coord = 0;
+		x = TS_x_value;
+		y = TS_y_value;
+
 	// Get X-Coordinate
 	/*for (i = 0; i < COORD_GET_NUM; i++)
 	{
 		ReadWriteTSC2046(X_MEASURE, &tmp);
 		X_Points[i] = tmp;
-	}*/
+	}
 	coord = EvalCoord(TS_x_value, TS_X_COORD_MAX,
 			TS_DELTA_X_VARIANCE);
 	if (coord > 0)
 		x = coord;
 	else
 		return;
-
+    */
 	// Get Y-Coordinate
 	/*for (i = 0; i < COORD_GET_NUM; i++)
 	{
 		ReadWriteTSC2046(Y_MEASURE, &tmp);
 		Y_Points[i] = tmp;
-	}*/
+	}
 	coord = EvalCoord(TS_y_value, TS_Y_COORD_MAX,
 			TS_DELTA_Y_VARIANCE);
 	if (coord > 0)
 		y = coord;
 	else
 		return;
-
+    */
 	// Get Z1-Coordinate
 	/*for (i = 0; i < COORD_GET_NUM; i++)
 	{
@@ -318,25 +364,23 @@ void GetTouchCoord(int16_t *pX, int16_t* pY)
 	{
 		if (TSC_Config.swap_xy)
 		{
-			*pY = ConvertCoord(x, TSC_Config.ad_top, TSC_Config.ad_bottom,
-					TSC_Config.lcd_v_size);
-			*pX = ConvertCoord(y, TSC_Config.ad_left, TSC_Config.ad_right,
-					TSC_Config.lcd_h_size);
+			*pY = ConvertCoord(x, TSC_Config.ad_top, TSC_Config.ad_bottom, TSC_Config.lcd_v_size);
+			*pX = ConvertCoord(y, TSC_Config.ad_left, TSC_Config.ad_right, TSC_Config.lcd_h_size);
 		}
 		else
 		{
-			*pX = ConvertCoord(x, TSC_Config.ad_top, TSC_Config.ad_bottom,
-					TSC_Config.lcd_v_size);
-			*pY = ConvertCoord(y, TSC_Config.ad_left, TSC_Config.ad_right,
-					TSC_Config.lcd_h_size);
+			*pX = ConvertCoord(x, TSC_Config.ad_top, TSC_Config.ad_bottom, TSC_Config.lcd_v_size);
+			*pY = ConvertCoord(y, TSC_Config.ad_left, TSC_Config.ad_right, TSC_Config.lcd_h_size);
 		}
 	}
+	TS_x_value = TS_x_value = -1;
+	}
 
-	EnableTS();
+	// EnableTS();
 }
 
 
-
+/*
 void EnableTS(void)
 {
 	uint8_t cmd;
@@ -356,8 +400,8 @@ void EnableTS(void)
 	CS_ON;
 	SSP_ReadWrite(TSC2046_SSP_PORT, &sspCfg, SSP_TRANSFER_POLLING);
 	CS_OFF;
-*/
 }
+*/
 
 /*
 void InitTS(TSC2046_Init_Type *pConfig)
@@ -444,7 +488,7 @@ static void ReadWriteTS(uint8_t channel, uint16_t* data)
 }
 */
 
-
+/*
 // 	***********************************************************************
 // 	* @brief       Evaluate the coords received from TSC.
 // 	* @param[in]   pPoints    list of coords
@@ -453,8 +497,7 @@ static void ReadWriteTS(uint8_t channel, uint16_t* data)
 // 	* @param[in]   MaxDelta   the maximum delta between coords
 // 	* @return      -1: Invalid coords, coord in case it is valid.
 // 	**********************************************************************
-static int16_t EvalCoord(uint16_t pPoints, uint16_t MaxVal,
-		uint16_t MaxDelta)
+static int16_t EvalCoord(uint16_t pPoints, uint16_t MaxVal,	uint16_t MaxDelta)
 {
 	uint32_t i = 0;
 	int16_t diff = 0, coord = -1;
@@ -493,7 +536,7 @@ static int16_t EvalCoord(uint16_t pPoints, uint16_t MaxVal,
 			coord_valid = 0;
 		}
 	}
-*/
+
 	//if (coord_valid)
 		return coord;
 	//return -1;
@@ -514,35 +557,7 @@ static int16_t CalPressureCoef(int16_t x, int16_t y, int16_t z1, int16_t z2)
 
 	return z;
 }
-// 	***********************************************************************
-//  * @brief       convert the coord received from TSC to a value on truly LCD.
-//  * @param[in]   Coord       received coord
-//  * @param[in]   MinVal    the minimum value of a coord
-//  * @param[in]   MaxVal     the maximum value of a coord
-//  * @param[in]   TrueSize   the size on LCD
-//  * @return      the coord after converting.
-//  **********************************************************************
-static int16_t ConvertCoord(int16_t Coord, int16_t MinVal, int16_t MaxVal,
-		int16_t TrueSize)
-{
-	int16_t tmp;
-	int16_t ret;
-	uint8_t convert = 0;
 
-	if (MinVal > MaxVal)        // Swap value
-	{
-		tmp = MaxVal;
-		MaxVal = MinVal;
-		MinVal = tmp;
-		convert = 1;
-	}
-
-	ret = (Coord - MinVal) * TrueSize / (MaxVal - MinVal);
-	if (convert)
-		ret = TrueSize - ret;
-
-	return ret;
-}
 
 // 	***********************************************************************
 // 	* @brief       Get Touch coordinates.

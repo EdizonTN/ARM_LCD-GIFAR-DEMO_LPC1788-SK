@@ -11,8 +11,9 @@
 // ******************************************************************************************************
 // Configuration
 // ******************************************************************************************************
-#define			debounce 1000 // debounce delay#define	TS_SETTLING_TIME 				100 				// settling time delay
+#define			debounce 				100 // debounce delay#define	TS_SETTLING_TIME 				100 				// settling time delay
 #define TS_CONVERSION_BITS     			12
+
 //#define TSC2046_SSP_CLOCK       		(2000000ul)
 // TSC2046 control byte definitions
 #define START_BIT               		(0x01<<7)
@@ -60,7 +61,7 @@ typedef struct
 } TS_Init_Type;
 
 extern TS_Init_Type TSC_Config;
-
+extern uint8_t TS_Activated_Flag;
 // Initialize TS on analog sub-system
 void Init_TS(TS_Init_Type *pConfig);
 

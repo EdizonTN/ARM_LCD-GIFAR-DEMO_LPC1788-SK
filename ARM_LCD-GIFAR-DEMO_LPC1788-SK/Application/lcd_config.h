@@ -55,12 +55,7 @@
 #define LCD_V_BACK_PORCH     15
 #define LCD_PIX_CLK          (6.5*1000000l)
 
-/* PWM */
-#define _PWM_NO_USED    1
-#define _PWM_CHANNEL_NO 2
-#define _PWM_PORT_NUM   2
-#define _PWM_PIN_NUM    1
-#define _PWM_PIN_FUNC_NUM 1
+
 
 #elif (_CUR_USING_LCD ==_RUNNING_LCD_EA_REV_PB1)
 #define   LOGO_DISPLAYED                (0)

@@ -28,7 +28,24 @@ void DeInit_RPOT(void)
 
 unsigned int GetValue_RPOT(void)
 {
-	  ADC_StartCmd(LPC_ADC, ADC_START_NOW);
-	  while (!(ADC_ChannelGetStatus(LPC_ADC, RPOT_ADC_PREPARED_CHANNEL, ADC_DATA_DONE)));
-	  return(ADC_ChannelGetData(LPC_ADC, RPOT_ADC_PREPARED_CHANNEL));
+	uint16_t res;
+
+	ADC_Init(LPC_ADC, 400000);
+	ADC_ChannelCmd(LPC_ADC, RPOT_ADC_PREPARED_CHANNEL, ENABLE);
+
+	ADC_StartCmd(LPC_ADC, ADC_START_NOW);
+	do
+	{
+		if ((LPC_ADC->CR & (1 << RPOT_ADC_PREPARED_CHANNEL))==0)		// if current channel is another then selected -> exit
+		{
+			ADC_ChannelCmd(LPC_ADC, TS_X_ADC_CH, DISABLE);
+			ADC_DeInit(LPC_ADC);
+			return (-1);
+		}
+	}
+	while (!(ADC_ChannelGetStatus(LPC_ADC, RPOT_ADC_PREPARED_CHANNEL, ADC_DATA_DONE)));
+	res = ADC_ChannelGetData(LPC_ADC, RPOT_ADC_PREPARED_CHANNEL);
+	ADC_DeInit(LPC_ADC);
+	return(res);
+
 }

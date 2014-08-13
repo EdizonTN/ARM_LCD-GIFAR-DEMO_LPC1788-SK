@@ -82,7 +82,6 @@
 
 // IAR example drivers an application:
 #include "../Application/lcd_config.h"
-#include "../Application/logo.h"
 #include "../Application/cursor.h"
 
 
