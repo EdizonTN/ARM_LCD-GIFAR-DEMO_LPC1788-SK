@@ -5,15 +5,28 @@
  *      Author: peterj
  ***********************************************************/
 
-
+// ******************************************************************************************************
+// USER - some useful macros....
+// ******************************************************************************************************
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
+
+// standard constants
+#ifndef _NULL
+	#define _NULL 					((void*) 0)
+#endif
+
+// BIT manipulation macros
+#define _SBIT(word, bit)				(word |= 1 << (bit))			// Set bit macro
+#define _CBIT(word, bit)				(word &= ~(1 << bit))			// Clear bit macro
+#define _TBIT(word, bit)				((word && (1 << bit))? CBIT(word, bit): SBIT (word, bit))			// Toogle bit macro
+
 
 // ******************************************************************************************************
 // SYSTEM
 // ******************************************************************************************************
 #include "stdint.h"
-
+#include "../Chip/Drivers/Include/lpc_types.h"
 // ******************************************************************************************************
 // PROJECT CONFIGURATION
 // ******************************************************************************************************
@@ -40,17 +53,13 @@
 // CMSIS Drivers
 // ******************************************************************************************************
 #include "../Chip/Drivers/Include/lpc177x_8x_pinsel.h"
-//#include "../Chip/Drivers/Include/lpc17xx.h"
-//#include "../Chip/Drivers/Include/lpc17xx_8x_libcfg.h" // load library configuration
-#include "../Chip/Drivers/Include/lpc177x_8x_gpio.h"
-#include "../Chip/Drivers/Include/lpc177x_8x_clkpwr.h"
-#include "../Chip/Drivers/Include/lpc177x_8x_pwm.h"
-#include "../Chip/Drivers/Include/lpc177x_8x_adc.h"
-#include "../Chip/Drivers/Include/lpc177x_8x_timer.h"
 
-//#include "../Chip/Drivers/Include/lpc177x_8x_uart.h"
+//#include "../Chip/Drivers/Include/lpc177x_8x_gpio.h"
+//#include "../Chip/Drivers/Include/lpc177x_8x_clkpwr.h"
+//#include "../Chip/Drivers/Include/lpc177x_8x_pwm.h"
+//#include "../Chip/Drivers/Include/lpc177x_8x_adc.h"
+//#include "../Chip/Drivers/Include/lpc177x_8x_timer.h"
 
-//#include "../Chip/Drivers/Include/lpc177x_8x_systick.h"
 
 // ******************************************************************************************************
 // BOARD SUPPORT PACKAGE HEADERS
@@ -78,11 +87,6 @@
 //#include "LPC177x_8x.h"
 //#include "type.h"
 //#include "timer.h"
-
-
-// IAR example drivers an application:
-#include "../Application/lcd_config.h"
-#include "../Application/cursor.h"
 
 
 

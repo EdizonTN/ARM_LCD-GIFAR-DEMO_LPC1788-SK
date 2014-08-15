@@ -229,6 +229,12 @@
 // ******************************************************************************************************
 // LCD TFT Display - GiFar GFT035EA320240Y:
 // ******************************************************************************************************
+#define BSP_LCD_BL_PWM_PERI_ID    			PWM_1
+#define BSP_LCD_BL_PWM_PERI_CHA				0			// Match channel register - cycle		- 100%
+#define BSP_LCD_BL_PWM_PERI_CHB				2			// Match channel register - duty cycle	- xx %
+#define BSP_LCD_BL_PWM_PORT					2			// pwm output port for pwm output pin...
+#define BSP_LCD_BL_PWM_PIN					1			// pwm output connected to LCD Backlight transistor's base
+
 #include "../DRV/LCD/Include/GFT035EA320240Y.h"  				// include a driver
 
 // ******************************************************************************************************

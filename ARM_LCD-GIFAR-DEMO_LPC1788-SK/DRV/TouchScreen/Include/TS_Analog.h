@@ -11,7 +11,8 @@
 // ******************************************************************************************************
 // Configuration
 // ******************************************************************************************************
-#define			debounce 				100 // debounce delay#define	TS_SETTLING_TIME 				100 				// settling time delay
+#define	debounce 						100 				// debounce delay#define num_samples 					16 					// number of A/D samples per axis
+#define	TS_SETTLING_TIME 				100 				// settling time delay
 #define TS_CONVERSION_BITS     			12
 
 //#define TSC2046_SSP_CLOCK       		(2000000ul)
@@ -27,7 +28,7 @@
 #define TOUCH_AD_TOP     				3842
 #define TOUCH_AD_BOTTOM  				267
 // ******************************************************************************************************
-// Hardware connection
+// Hardware connection - see bsp.h
 // ******************************************************************************************************
 #define TS_X1_PORT						BSP_TS_X1_PORT
 #define TS_X1_PIN						BSP_TS_X1_PIN
@@ -63,7 +64,7 @@ typedef struct
 extern TS_Init_Type TSC_Config;
 extern uint8_t TS_Activated_Flag;
 // Initialize TS on analog sub-system
-void Init_TS(TS_Init_Type *pConfig);
+void Init_TS(void);
 
 // Get current Touch Coordinates
 void GetTouchCoord(int16_t *pX, int16_t* pY);

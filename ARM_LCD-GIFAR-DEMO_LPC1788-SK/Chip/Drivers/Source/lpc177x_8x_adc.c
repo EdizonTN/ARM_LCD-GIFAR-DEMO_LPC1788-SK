@@ -1,4 +1,5 @@
 /**********************************************************************
+* $Id$      lpc177x_8x_adc.c            2011-06-02
 *//**
 * @file     lpc177x_8x_adc.c
 * @brief    Contains all functions support for ADC firmware library on

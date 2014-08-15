@@ -6,25 +6,26 @@
  */
 
 #include "global.h"
+#include "../Chip/Drivers/Include/lpc177x_8x_timer.h"
+#include "../Chip/Drivers/Include/lpc177x_8x_gpio.h"
+#include "../Chip/Drivers/Include/lpc177x_8x_pinsel.h"
+#include "../Chip/Drivers/Include/lpc177x_8x_adc.h"
 
 
 // ******************************************************************************************************
 // Function prototypes
 // ******************************************************************************************************
 // extern unsigned long install_irq(unsigned long IntNumber, void *HandlerAddr, unsigned long Priority);
-void Init_TS(TS_Init_Type *pConfig);
-char hex_to_ascii(char ch);
+void Init_TS(void);
 unsigned int touch_detect(void);
-
-static int16_t ConvertCoord(int16_t Coord, int16_t MinVal, int16_t MaxVal, int16_t TrueSize);
-TS_Init_Type TSC_Config;
-
-uint8_t TS_Activated_Flag;
 
 // ******************************************************************************************************
 // Globals
 // ******************************************************************************************************
-#define num_samples 16 								// number of A/D samples per axisunsigned int x_values[num_samples]; 				// array to store x_samples
+TS_Init_Type TSC_Config;
+static int16_t ConvertCoord(int16_t Coord, int16_t MinVal, int16_t MaxVal, int16_t TrueSize);
+uint8_t TS_Activated_Flag;
+unsigned int x_values[num_samples]; 				// array to store x_samples
 unsigned int y_values[num_samples]; 				// array to store y_samples
 static short TS_x_value = 1;
 static short TS_y_value = -1;
@@ -91,16 +92,26 @@ void GPIO_IRQHandler(void) //_ _ irq
 		if(touch_detect())
 		{
 			TS_Activated_Flag = SET;
-			//TS_Read();
+
 		}
+		NVIC_EnableIRQ(GPIO_IRQn);
 	}
 }
 
 
 
-void Init_TS(TS_Init_Type *pConfig)
+void Init_TS(void)
 {
 	TIM_TIMERCFG_Type TIM_ConfigStruct;
+
+	TSC_Config.ad_left = TOUCH_AD_LEFT;
+	TSC_Config.ad_right = TOUCH_AD_RIGHT;
+	TSC_Config.ad_top = TOUCH_AD_TOP;
+	TSC_Config.ad_bottom = TOUCH_AD_BOTTOM;
+	TSC_Config.lcd_h_size = LCD_H_SIZE;
+	TSC_Config.lcd_v_size = LCD_V_SIZE;
+	TSC_Config.Priority = 5;
+	TSC_Config.swap_xy = 0;
 
 	// init timer
     TIM_ConfigStruct.PrescaleOption = TIM_PRESCALE_USVAL;
@@ -112,7 +123,7 @@ void Init_TS(TS_Init_Type *pConfig)
 	GPIO_IntCmd(TS_X1_PORT, 1 << TS_X1_PIN, 1);	// - 1: Falling edge
 	ADC_Init(LPC_ADC, 400000);
 
-	NVIC_SetPriority(GPIO_IRQn, pConfig->Priority);
+	NVIC_SetPriority(GPIO_IRQn, TSC_Config.Priority);
 	NVIC_EnableIRQ(GPIO_IRQn);
 	touch_detect();
 	// ADC_IntConfig (LPC_ADC_TypeDef *ADCx, ADC_TYPE_INT_OPT IntType, FunctionalState NewState);
@@ -128,14 +139,8 @@ void DeInit_TS(void)
 
 
 
-// 	***********************************************************************
-//  * @brief       convert the coord received from TSC to a value on truly LCD.
-//  * @param[in]   Coord       received coord
-//  * @param[in]   MinVal    the minimum value of a coord
-//  * @param[in]   MaxVal     the maximum value of a coord
-//  * @param[in]   TrueSize   the size on LCD
-//  * @return      the coord after converting.
-//  **********************************************************************
+// --------------------------------------------------
+//
 static int16_t ConvertCoord(int16_t Coord, int16_t MinVal, int16_t MaxVal, int16_t TrueSize)
 {
 	int16_t tmp;
@@ -157,7 +162,8 @@ static int16_t ConvertCoord(int16_t Coord, int16_t MinVal, int16_t MaxVal, int16
 	return ret;
 }
 
-
+// --------------------------------------------------
+//
 void TS_Read(void)
 {
 	uint32_t i;
@@ -287,7 +293,8 @@ void TS_Read(void)
 
 
 
-
+// --------------------------------------------------
+//
 void GetTouchCoord(int16_t *pX, int16_t* pY)
 {
 	uint16_t i, tmp;
@@ -648,3 +655,4 @@ void GetTouchCoord(int16_t *pX, int16_t* pY)
 	EnableTS();
 }
 */
+

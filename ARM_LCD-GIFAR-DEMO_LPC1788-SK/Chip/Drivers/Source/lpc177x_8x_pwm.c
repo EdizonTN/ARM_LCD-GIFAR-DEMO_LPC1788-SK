@@ -466,7 +466,8 @@ uint32_t PWM_GetCaptureValue(uint8_t pwmId, uint8_t CaptureChannel)
  *                  this channel on next reset by a PWM Match event.
  * @return      None
  *********************************************************************/
-void PWM_MatchUpdate(uint8_t pwmId, uint8_t MatchChannel, uint32_t MatchValue, uint8_t UpdateType)
+void PWM_MatchUpdate(uint8_t pwmId, uint8_t MatchChannel,
+                                        uint32_t MatchValue, uint8_t UpdateType)
 {
     LPC_PWM_TypeDef* pPwm = PWM_GetPointer(pwmId);
 

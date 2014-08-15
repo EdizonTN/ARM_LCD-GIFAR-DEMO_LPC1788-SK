@@ -6,9 +6,9 @@
  */
 
 #include "global.h"
+#include "../Chip/Drivers/Include/lpc177x_8x_pinsel.h"
+#include "../Chip/Drivers/Include/lpc177x_8x_adc.h"
 
-// *********************
-//   Initialize ADC
 
 void Init_RPOT(void)
 {
