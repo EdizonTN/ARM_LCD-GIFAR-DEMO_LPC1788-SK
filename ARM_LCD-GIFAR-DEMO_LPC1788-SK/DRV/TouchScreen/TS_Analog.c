@@ -85,7 +85,8 @@ unsigned int touch_detect(void)
 // Detected IRQ event from X-Plus line, Falling edge.
 void GPIO_IRQHandler(void) //_ _ irq
 {
-	if(GPIO_GetIntStatus(TS_X1_PORT, TS_X1_PIN, 1))
+	NVIC_DisableIRQ(GPIO_IRQn);
+	//if(GPIO_GetIntStatus(TS_X1_PORT, TS_X1_PIN, 1))
 	{
 		GPIO_ClearInt(TS_X1_PORT, 1 << TS_X1_PIN);
 		TIM_Waitms (debounce); 								// debounce the touch
@@ -178,15 +179,16 @@ void TS_Read(void)
 	PINSEL_SetPinMode(TS_X2_PORT,TS_X2_PIN, PINSEL_BASICMODE_PLAINOUT);
 	PINSEL_ConfigPin(TS_X2_PORT,TS_X2_PIN,IOCON_DIGITIAL_MODE);
 	FIO_SetDir(TS_X2_PORT, 1 << TS_X2_PIN, GPIO_DIRECTION_OUTPUT);
-	FIO_ClearValue(TS_X2_PORT, 1 << TS_X2_PIN);
+	FIO_ClearValue(TS_X2_PORT, 1 << TS_X2_PIN);		// X2 - Output, set to log.0
 
 	//PINSEL0 &= ~(Y_2_mask); 						// Y- is digital I/O
 	//PINMODE0 &= ~(Y_2_mask);
 	//PINMODE0 |= Y_2_no_pull; 						// no pullup on Y-
 	//IODIR0 &= ~(Y_2); 								// Y- is an input
 	PINSEL_SetPinMode(TS_Y2_PORT,TS_Y2_PIN, PINSEL_BASICMODE_PLAINOUT);
+	//PINSEL_SetPinMode(TS_Y2_PORT,TS_Y2_PIN, PINSEL_BASICMODE_PULLUP);
 	PINSEL_ConfigPin(TS_Y2_PORT,TS_Y2_PIN,IOCON_DIGITIAL_MODE);
-	FIO_SetDir(TS_Y2_PORT, 1 << TS_Y2_PIN, GPIO_DIRECTION_INPUT);
+	FIO_SetDir(TS_Y2_PORT, 1 << TS_Y2_PIN, GPIO_DIRECTION_INPUT);	// Y2 - Input, no PullUp
 
 	//PINSEL1 &= ~(X_1_mask); 						// X+ is digital I/O
 	//PINMODE1 &= ~(X_2_mask);
@@ -196,7 +198,7 @@ void TS_Read(void)
 	PINSEL_SetPinMode(TS_X1_PORT,TS_X1_PIN, PINSEL_BASICMODE_PLAINOUT);
 	PINSEL_ConfigPin(TS_X1_PORT,TS_X1_PIN,IOCON_DIGITIAL_MODE);
 	FIO_SetDir(TS_X1_PORT, 1 << TS_X1_PIN, GPIO_DIRECTION_OUTPUT);
-	FIO_SetValue(TS_X1_PORT, 1 << TS_X1_PIN);
+	FIO_SetValue(TS_X1_PORT, 1 << TS_X1_PIN);		// X1 - Output, set to log.1
 
 
 	//PINSEL1 &= ~(Y_1_mask);
@@ -207,18 +209,21 @@ void TS_Read(void)
 
 	//AD0CR = 0x00200304; 							// Power up, PCLK/4, sel AD0.2
 	ADC_Init(LPC_ADC, 400000);
+	//ADC_BurstCmd(LPC_ADC,ENABLE);
 	for (i = 0; i < num_samples; i++)
 	{
 		// AD0CR |= 0x01000000; 						// Start A/D conversion
 
 		ADC_ChannelCmd(LPC_ADC, TS_Y_ADC_CH, ENABLE);
-		ADC_StartCmd(LPC_ADC, ADC_START_NOW);;
+		ADC_StartCmd(LPC_ADC, ADC_START_NOW);
+
 		// while (AD0DR2 & 0x80000000); 				// wait conversion completed
 		while (!(ADC_ChannelGetStatus(LPC_ADC, TS_Y_ADC_CH, ADC_DATA_DONE)));
 		ADC_ChannelCmd(LPC_ADC, TS_Y_ADC_CH, DISABLE);
 		//x_values[i] = ((AD0DR2 >> 6) & 0x3FF); 		// store result
-		x_values[i] = (ADC_ChannelGetData(LPC_ADC,TS_Y_ADC_CH) >>6) & 0x3ff;
+		x_values[i] = (ADC_ChannelGetData(LPC_ADC,TS_Y_ADC_CH) >>6) & 0x3ff;	//merias x-ovu os ale napatie sa zistuje na y-ovej !!
 	}
+	//ADC_BurstCmd(LPC_ADC,DISABLE);
 	ADC_DeInit(LPC_ADC);
 
 	//read_ch_y();									// read and collect the y values
@@ -287,8 +292,7 @@ void TS_Read(void)
 	{
 		TS_y_value += y_values[i]; 				// add up conversion results
 	}
-	TS_y_value = TS_y_value /num_samples; 			// get average
-
+	TS_y_value = TS_y_value /num_samples; 		// get average
 }
 
 
@@ -384,6 +388,7 @@ void GetTouchCoord(int16_t *pX, int16_t* pY)
 	}
 
 	// EnableTS();
+	touch_detect();								// vrat snimac do stavu cakania na IRQ
 }
 
 
