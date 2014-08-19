@@ -79,10 +79,12 @@ void Init_LCD(void)
 	  lcd_config.lcd_palette = _NULL;
 	  lcd_config.lcd_bgr = FALSE;
 
+	  // Init LCD HW
+	  LCD_Init (&lcd_config);
+
+	  // clear background.
 	  LCD_SetImage(LCD_PANEL_UPPER, NULL);
 	  LCD_SetImage(LCD_PANEL_LOWER, NULL);
-
-	  LCD_Init (&lcd_config);
 }
 
 void Init_LCD_Cursor(void)

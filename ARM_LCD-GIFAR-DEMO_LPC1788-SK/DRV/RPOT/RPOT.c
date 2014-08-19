@@ -9,24 +9,37 @@
 #include "../Chip/Drivers/Include/lpc177x_8x_pinsel.h"
 #include "../Chip/Drivers/Include/lpc177x_8x_adc.h"
 
+// ******************************************************************************************************
+// Function prototypes
+// ******************************************************************************************************
+void Init_RPOT(void);
 
+// ******************************************************************************************************
+// Globals
+// ******************************************************************************************************
+
+// --------------------------------------------------
+// First HW initialization
 void Init_RPOT(void)
 {
 	PINSEL_ConfigPin (RPOT_ADC_PREPARED_CH_PORT, RPOT_ADC_PREPARED_CH_PIN, RPOT_ADC_PREPARED_CH_FUNC_NO);
 	PINSEL_SetAnalogPinMode(RPOT_ADC_PREPARED_CH_PORT, RPOT_ADC_PREPARED_CH_PIN,ENABLE);
 
 	ADC_Init(LPC_ADC, 400000);
-	ADC_IntConfig(LPC_ADC, RPOT_ADC_PREPARED_INTR, DISABLE);
+	//ADC_IntConfig(LPC_ADC, RPOT_ADC_PREPARED_INTR, DISABLE);
 	ADC_ChannelCmd(LPC_ADC, RPOT_ADC_PREPARED_CHANNEL, ENABLE);
 }
 
-
+// --------------------------------------------------
+// Freeing memory
 void DeInit_RPOT(void)
 {
 
 }
 
-unsigned int GetValue_RPOT(void)
+// --------------------------------------------------
+// Get fresh value.
+uint16_t Get_RPOT_Value(void)
 {
 	uint16_t res;
 
@@ -38,7 +51,7 @@ unsigned int GetValue_RPOT(void)
 	{
 		if ((LPC_ADC->CR & (1 << RPOT_ADC_PREPARED_CHANNEL))==0)		// if current channel is another then selected -> exit
 		{
-			ADC_ChannelCmd(LPC_ADC, TS_X_ADC_CH, DISABLE);
+			ADC_ChannelCmd(LPC_ADC, RPOT_ADC_PREPARED_CHANNEL, DISABLE);
 			ADC_DeInit(LPC_ADC);
 			return (-1);
 		}
@@ -47,5 +60,4 @@ unsigned int GetValue_RPOT(void)
 	res = ADC_ChannelGetData(LPC_ADC, RPOT_ADC_PREPARED_CHANNEL);
 	ADC_DeInit(LPC_ADC);
 	return(res);
-
 }

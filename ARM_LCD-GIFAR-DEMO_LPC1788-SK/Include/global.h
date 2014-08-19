@@ -19,7 +19,7 @@
 // BIT manipulation macros
 #define _SBIT(word, bit)				(word |= 1 << (bit))			// Set bit macro
 #define _CBIT(word, bit)				(word &= ~(1 << bit))			// Clear bit macro
-#define _TBIT(word, bit)				((word && (1 << bit))? CBIT(word, bit): SBIT (word, bit))			// Toogle bit macro
+#define _TBIT(word, bit)				((word && (1 << bit))? CBIT(word, bit): SBIT (word, bit))	// Toogle bit macro
 
 
 // ******************************************************************************************************
@@ -53,12 +53,7 @@
 // CMSIS Drivers
 // ******************************************************************************************************
 #include "../Chip/Drivers/Include/lpc177x_8x_pinsel.h"
-
-//#include "../Chip/Drivers/Include/lpc177x_8x_gpio.h"
-//#include "../Chip/Drivers/Include/lpc177x_8x_clkpwr.h"
-//#include "../Chip/Drivers/Include/lpc177x_8x_pwm.h"
-//#include "../Chip/Drivers/Include/lpc177x_8x_adc.h"
-//#include "../Chip/Drivers/Include/lpc177x_8x_timer.h"
+// other CMSIS drivers called from included libraries, framevork or drivers
 
 
 // ******************************************************************************************************
@@ -79,16 +74,12 @@
 //#include "lcd_params.h"
 //#include "lcd_driver.h"
 //#include "lcd_type.h"
+/*
 #include "../LIB/GUI-SWIM/Include/lpc_swim_font.h"
 #include "../LIB/GUI-SWIM/Include/lpc_swim.h"
 #include "../LIB/GUI-SWIM/Include/lpc_rom8x16.h"
 #include "../LIB/GUI-SWIM/Include/lpc_winfreesystem14x16.h"
 #include "../LIB/GUI-SWIM/Include/lpc_x6x13.h"
-//#include "LPC177x_8x.h"
-//#include "type.h"
-//#include "timer.h"
-
-
-
+*/
 
 #endif /* GLOBAL_H_ */

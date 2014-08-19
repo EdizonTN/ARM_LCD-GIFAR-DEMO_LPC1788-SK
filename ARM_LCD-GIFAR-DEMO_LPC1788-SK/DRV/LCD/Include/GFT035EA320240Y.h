@@ -25,8 +25,8 @@
 // CUrsor config
 #define LCD_CURSOR_SIZE					32
 //Cursor 64x64 pixels
-#define LCD_CURSOR_H_SIZE       		64
-#define LCD_CURSOR_V_SIZE       		64
+#define LCD_CURSOR_H_SIZE       		32
+#define LCD_CURSOR_V_SIZE       		32
 #define LCD_CURSOR_OFF_X       			(LCD_CURSOR_H_SIZE/2)
 #define LCD_CURSOR_OFF_Y       			(LCD_CURSOR_V_SIZE/2)
 

@@ -1,3 +1,10 @@
+/*
+ * LCD_Cursor.c
+ *
+ *  Created on: 11.8.2014
+ *      Author: peterj
+ */
+
 #include "global.h"
 
 #ifdef __IAR_SYSTEMS_ICC__

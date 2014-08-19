@@ -100,7 +100,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="profiler.S|Tools|DRV/TouchScreen/tsc2046.c|lcd_driver.c|ex_sdram.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="profiler.S|Tools|DRV/TouchScreen/tsc2046.c|lcd_driver.c|ex_sdram.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
