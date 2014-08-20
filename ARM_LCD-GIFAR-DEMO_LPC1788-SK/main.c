@@ -1,59 +1,9 @@
 /*************************************************************************
+ * main.c
  *
- *    Used with ICCARM and AARM.
- *
- *    (c) Copyright IAR Systems 2008
- *
- *    File name   : main.c
- *    Description : Main module
- *
- *    History :
- *    1. Date        : 4, August 2008
- *       Author      : Stanimir Bonev
- *       Description : Create
- *
- *  This example project shows how to use the IAR Embedded Workbench for ARM
- * to develop code for the IAR LPC-1788 board. It shows basic use of the I/O,
- * the timer and the interrupt controllers.
- *  It starts by blinking USB Link LED.
- *
- * Jumpers:
- *  EXT/JLINK  - depending of power source
- *  ISP_E      - unfilled
- *  RST_E      - unfilled
- *  BDS_E      - unfilled
- *  C/SC       - SC
- *
- * Note:
- *  After power-up the controller get clock from internal RC oscillator that
- * is unstable and may fail with J-Link auto detect, therefore adaptive clocking
- * should always be used. The adaptive clock can be select from menu:
- *  Project->Options..., section Debugger->J-Link/J-Trace  JTAG Speed - Adaptive.
- *
- *    $Revision: 24636 $
- **************************************************************************/
-
-
-// Profiler:
-// skopiruj GNARMGCC_DIR/arm-none-eabi/lib/libc.a do libc_p.a
-// toto odstrani chybu linkera: "../arm-none-eabi/bin/ld.exe: cannot find -lc_p"
-// nastav "-pg -p" options v Compiler options
-
-// Odstranenie chyby "undefined reference to __gnu_mcount_nc"
-// vytvor asm subor "profiler.S" a zapis do neho:
-//.syntax unified
-//.arch armv7-m
-//
-//.globl __gnu_mcount_nc
-//    .type __gnu_mcount_nc, %function
-//__gnu_mcount_nc:
-//    mov    ip, lr
-//    pop    { lr }
-//    bx     ip
-//
-// skompiluj.
-// spusti debugger
-
+ *  Created on: 29.7.2014
+ *      Author: peterj
+ ***********************************************************/
 
 #include "global.h"
 
